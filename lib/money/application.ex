@@ -56,6 +56,18 @@ defmodule Money.Application do
   def maybe_log_deprecation do
     handle_removed_env(:delay_before_first_retrieval)
     handle_updated_env(:exchange_rate_service, :auto_start_exchange_rate_service)
+
+    scope_exchange_rates = :exchange_rates
+    handle_updated_env(:api_module, {scope_exchange_rates, :api_module})
+    handle_updated_env(:callback_module, {scope_exchange_rates, :callback_module})
+    handle_updated_env(:exchange_rates_cache_module, {scope_exchange_rates, :cache_module})
+    handle_updated_env(:auto_start_exchange_rate_service, {scope_exchange_rates, :auto_start})
+    handle_updated_env(:exchange_rates_retrieve_every, {scope_exchange_rates, :retrieve_every})
+    handle_updated_env(:preload_historic_rates, {scope_exchange_rates, :preload_historic_rates})
+    handle_updated_env(:log_success, {scope_exchange_rates, :log_level_success})
+    handle_updated_env(:log_failure, {scope_exchange_rates, :log_level_failure})
+    handle_updated_env(:log_info, {scope_exchange_rates, :log_level_info})
+    handle_updated_env(:verify_peer, {scope_exchange_rates, :verify_peer})
   end
 
   defp handle_removed_env(old) do

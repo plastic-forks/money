@@ -456,7 +456,15 @@ defmodule MoneyTest do
     end
   end
 
-  test "that we get a deprecation message if we use :exchange_rate_service keywork option" do
+  test "that we get a deprecation message if we use :delay_before_first_retrieval keyword option" do
+    Application.put_env(:ex_money, :delay_before_first_retrieval, 300)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :delay_before_first_retrieval is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :exchange_rate_service keyword option" do
     Application.put_env(:ex_money, :exchange_rate_service, true)
 
     assert capture_log(fn ->
@@ -464,12 +472,84 @@ defmodule MoneyTest do
            end) =~ "Configuration option :exchange_rate_service is deprecated"
   end
 
-  test "that we get a deprecation message if we use :delay_before_first_retrieval keywork option" do
-    Application.put_env(:ex_money, :delay_before_first_retrieval, 300)
+  test "that we get a deprecation message if we use :api_module keyword option" do
+    Application.put_env(:ex_money, :api_module, Money.ExchangeRates.OpenExchangeRates)
 
     assert capture_log(fn ->
              Money.Application.maybe_log_deprecation()
-           end) =~ "Configuration option :delay_before_first_retrieval is deprecated"
+           end) =~ "Configuration option :api_module is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :callback_module keyword option" do
+    Application.put_env(:ex_money, :callback_module, Money.ExchangeRates.Callback)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :callback_module is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :exchange_rates_cache_module keyword option" do
+    Application.put_env(:ex_money, :exchange_rates_cache_module, Money.ExchangeRates.Cache.Dets)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :exchange_rates_cache_module is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :auto_start_exchange_rate_service keyword option" do
+    Application.put_env(:ex_money, :auto_start_exchange_rate_service, true)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :auto_start_exchange_rate_service is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :exchange_rates_retrieve_every keyword option" do
+    Application.put_env(:ex_money, :exchange_rates_retrieve_every, 300_000)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :exchange_rates_retrieve_every is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :preload_historic_rates keyword option" do
+    Application.put_env(:ex_money, :preload_historic_rates, nil)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :preload_historic_rates is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :log_success keyword option" do
+    Application.put_env(:ex_money, :log_success, nil)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :log_success is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :log_failure keyword option" do
+    Application.put_env(:ex_money, :log_failure, nil)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :log_failure is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :log_info keyword option" do
+    Application.put_env(:ex_money, :log_info, nil)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :log_info is deprecated"
+  end
+
+  test "that we get a deprecation message if we use :verify_peer keyword option" do
+    Application.put_env(:ex_money, :verify_peer, true)
+
+    assert capture_log(fn ->
+             Money.Application.maybe_log_deprecation()
+           end) =~ "Configuration option :verify_peer is deprecated"
   end
 
   test "the integer and exponent for a number with more than the required decimal places" do
