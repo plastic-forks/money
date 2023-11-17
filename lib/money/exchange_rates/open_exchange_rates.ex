@@ -37,16 +37,16 @@ defmodule Money.ExchangeRates.OpenExchangeRates do
   exchange rate service starts up, just after the ets table
   :exchange_rates is created.
 
-  * `default_config` is the configuration returned by `Money.ExchangeRates.default_config/0`
+  * `config` is the configuration returned by `Money.ExchangeRates.Config.new/0`
 
   Returns the configuration either unchanged or updated with
   additional configuration specific to this exchange
   rates retrieval module.
   """
-  def init(default_config) do
+  def init(config) do
     url = Money.get_env(:open_exchange_rates_url, @open_exchange_rate_url)
     app_id = Money.get_env(:open_exchange_rates_app_id, nil)
-    Map.put(default_config, :retriever_options, %{url: url, app_id: app_id})
+    Map.put(config, :retriever_options, %{url: url, app_id: app_id})
   end
 
   def decode_rates(body) do

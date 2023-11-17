@@ -63,7 +63,7 @@ defmodule Money.ExchangeRates.Test do
 
   test "That an error is returned if there is no open exchange rates app_id configured" do
     Application.put_env(:ex_money, :open_exchange_rates_app_id, nil)
-    config = Money.ExchangeRates.OpenExchangeRates.init(Money.ExchangeRates.default_config())
+    config = Money.ExchangeRates.OpenExchangeRates.init(Money.ExchangeRates.Config.new())
     config = Map.put(config, :log_levels, %{failure: nil, info: nil, success: nil})
 
     assert Money.ExchangeRates.OpenExchangeRates.get_latest_rates(config) ==
@@ -78,7 +78,7 @@ defmodule Money.ExchangeRates.Test do
         System.get_env("OPEN_EXCHANGE_RATES_APP_ID")
       )
 
-      config = Money.ExchangeRates.OpenExchangeRates.init(Money.ExchangeRates.default_config())
+      config = Money.ExchangeRates.OpenExchangeRates.init(Money.ExchangeRates.Config.new())
       config = Map.put(config, :log_levels, %{failure: nil, info: nil, success: nil})
 
       # Testing only, should not be used in production
@@ -94,7 +94,7 @@ defmodule Money.ExchangeRates.Test do
 
   test "that api latest_rates callbacks are executed" do
     config =
-      Money.ExchangeRates.default_config()
+      Money.ExchangeRates.Config.new()
       |> Map.put(:callback_module, Money.ExchangeRates.CallbackTest)
 
     Money.ExchangeRates.Retriever.reconfigure(config)
@@ -102,13 +102,13 @@ defmodule Money.ExchangeRates.Test do
 
     assert Application.get_env(:ex_money, :test) == "Latest Rates Retrieved"
 
-    Money.ExchangeRates.default_config()
+    Money.ExchangeRates.Config.new()
     |> Money.ExchangeRates.Retriever.reconfigure()
   end
 
   test "that api historic_rates callbacks are executed" do
     config =
-      Money.ExchangeRates.default_config()
+      Money.ExchangeRates.Config.new()
       |> Map.put(:callback_module, Money.ExchangeRates.CallbackTest)
 
     Money.ExchangeRates.Retriever.reconfigure(config)
@@ -116,7 +116,7 @@ defmodule Money.ExchangeRates.Test do
 
     assert Application.get_env(:ex_money, :test) == "Historic Rates Retrieved"
 
-    Money.ExchangeRates.default_config()
+    Money.ExchangeRates.Config.new()
     |> Money.ExchangeRates.Retriever.reconfigure()
   end
 

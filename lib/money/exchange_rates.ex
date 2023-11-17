@@ -156,12 +156,8 @@ defmodule Money.ExchangeRates do
 
   require Logger
   import Money.ExchangeRates.Cache
+  alias Money.ExchangeRates.Config
   alias Money.ExchangeRates.Retriever
-
-  @default_retrieval_interval :never
-  @default_callback_module Money.ExchangeRates.Callback
-  @default_api_module Money.ExchangeRates.OpenExchangeRates
-  @default_cache_module Money.ExchangeRates.Cache.Ets
 
   @doc """
   Returns the configuration for `ex_money` including the
@@ -170,57 +166,14 @@ defmodule Money.ExchangeRates do
 
   """
   def config do
-    api_module = default_config().api_module
+    config = Config.new()
+    api_module = config.api_module
 
     if function_exported?(api_module, :init, 1) do
-      api_module.init(default_config())
+      api_module.init(config)
     else
-      default_config()
+      config
     end
-  end
-
-  # Defines the configuration for the exchange rates mechanism.
-  defmodule Config do
-    @type t :: %__MODULE__{
-            retrieve_every: non_neg_integer | nil,
-            api_module: module() | nil,
-            callback_module: module() | nil,
-            log_levels: map(),
-            preload_historic_rates: Date.t() | Date.Range.t() | {Date.t(), Date.t()} | nil,
-            retriever_options: map() | nil,
-            cache_module: module() | nil,
-            verify_peer: boolean()
-          }
-
-    defstruct retrieve_every: nil,
-              api_module: nil,
-              callback_module: nil,
-              log_levels: %{},
-              preload_historic_rates: nil,
-              retriever_options: nil,
-              cache_module: nil,
-              verify_peer: true
-  end
-
-  @doc """
-  Returns the default configuration for the exchange rates retriever.
-
-  """
-  def default_config do
-    %Config{
-      api_module: Money.get_env(:api_module, @default_api_module, :module),
-      callback_module: Money.get_env(:callback_module, @default_callback_module, :module),
-      preload_historic_rates: Money.get_env(:preload_historic_rates, nil),
-      cache_module: Money.get_env(:exchange_rates_cache_module, @default_cache_module, :module),
-      retrieve_every:
-        Money.get_env(:exchange_rates_retrieve_every, @default_retrieval_interval, :maybe_integer),
-      log_levels: %{
-        success: Money.get_env(:log_success, nil),
-        failure: Money.get_env(:log_failure, :warn),
-        info: Money.get_env(:log_info, :info)
-      },
-      verify_peer: Money.get_env(:verify_peer, true, :boolean)
-    }
   end
 
   @doc """

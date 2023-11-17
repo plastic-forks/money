@@ -31,7 +31,7 @@ defmodule Money.Application do
     maybe_log_deprecation()
 
     start? = Money.get_env(@auto_start, true, :boolean)
-    api_module = ExchangeRates.default_config().api_module
+    api_module = ExchangeRates.Config.new().api_module
     api_module_present? = Code.ensure_loaded?(api_module)
 
     if !api_module_present? do
@@ -52,6 +52,7 @@ defmodule Money.Application do
     |> String.replace_leading("Elixir.", "")
   end
 
+  # TODO: remove these deprecation warnings in v6.0.0
   @doc false
   def maybe_log_deprecation do
     handle_removed_env(:delay_before_first_retrieval)
