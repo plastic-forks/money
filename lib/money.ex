@@ -2418,6 +2418,52 @@ defmodule Money do
     end
   end
 
+  @doc false
+  def get_env(scope, key, default) do
+    Application.get_env(:ex_money, scope, [])
+    |> Keyword.get(key, default)
+    |> case do
+      {:system, env_key} ->
+        System.get_env(env_key) || default
+
+      env ->
+        env
+    end
+  end
+
+  def get_env(scope, key, default, :integer) do
+    scope
+    |> get_env(key, default)
+    |> to_integer
+  end
+
+  def get_env(scope, key, default, :maybe_integer) do
+    scope
+    |> get_env(key, default)
+    |> to_maybe_integer
+  end
+
+  def get_env(scope, key, default, :module) do
+    scope
+    |> get_env(key, default)
+    |> to_module()
+  end
+
+  def get_env(scope, key, default, :boolean) do
+    case get_env(scope, key, default) do
+      true ->
+        true
+
+      false ->
+        false
+
+      other ->
+        raise RuntimeError,
+              "[ex_money] The configuration key " <>
+                "#{inspect(key)} must be either true or false. #{inspect(other)} was provided."
+    end
+  end
+
   defp to_integer(nil), do: nil
   defp to_integer(n) when is_integer(n), do: n
   defp to_integer(n) when is_binary(n), do: String.to_integer(n)
