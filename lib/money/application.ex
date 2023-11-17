@@ -54,29 +54,58 @@ defmodule Money.Application do
 
   @doc false
   def maybe_log_deprecation do
-    case Application.fetch_env(:ex_money, :delay_before_first_retrieval) do
+    handle_removed_env(:delay_before_first_retrieval)
+    handle_updated_env(:exchange_rate_service, :auto_start_exchange_rate_service)
+  end
+
+  defp handle_removed_env(old) do
+    case Application.fetch_env(:ex_money, old) do
       {:ok, _} ->
         Logger.warning(
-          "[ex_money] Configuration option :delay_before_first_retrieval is deprecated. " <>
+          "[ex_money] Configuration option #{inspect(old)} is deprecated. " <>
             "Please remove it from your configuration."
         )
 
-        Application.delete_env(:ex_money, :delay_before_first_retrieval)
+        Application.delete_env(:ex_money, old)
 
       :error ->
         nil
     end
+  end
 
-    case Application.fetch_env(:ex_money, :exchange_rate_service) do
-      {:ok, start?} ->
+  defp handle_updated_env(old, new) when is_atom(new) do
+    case Application.fetch_env(:ex_money, old) do
+      {:ok, env} ->
         Logger.warning(
-          "[ex_money] Configuration option :exchange_rate_service is deprecated " <>
-            "in favour of :auto_start_exchange_rate_service.  Please " <>
-            "update your configuration."
+          "[ex_money] Configuration option #{inspect(old)} is deprecated " <>
+            "in favour of #{inspect(new)}. " <>
+            "Please update your configuration."
         )
 
-        Application.put_env(:ex_money, :auto_start_exchange_rate_service, start?)
-        Application.delete_env(:ex_money, :exchange_rate_service)
+        Application.put_env(:ex_money, new, env)
+        Application.delete_env(:ex_money, old)
+
+      :error ->
+        nil
+    end
+  end
+
+  defp handle_updated_env(old, {scope, new}) do
+    case Application.fetch_env(:ex_money, old) do
+      {:ok, env} ->
+        Logger.warning(
+          "[ex_money] Configuration option #{inspect(old)} is deprecated " <>
+            "in favour of #{scope}: [#{new}: ...]. " <>
+            "Please update your configuration."
+        )
+
+        updated_envs =
+          :ex_money
+          |> Application.get_env(scope, [])
+          |> Keyword.put(new, env)
+
+        Application.put_env(:ex_money, scope, updated_envs)
+        Application.delete_env(:ex_money, old)
 
       :error ->
         nil
