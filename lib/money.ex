@@ -2262,7 +2262,9 @@ defmodule Money do
   else
     def integer?(%{amount: %Decimal{coef: :NaN}}), do: false
     def integer?(%{amount: %Decimal{coef: :inf}}), do: false
-    def integer?(%{amount: %Decimal{coef: coef, exp: exp}}), do: exp >= 0 or zero_after_dot?(coef, exp)
+
+    def integer?(%{amount: %Decimal{coef: coef, exp: exp}}),
+      do: exp >= 0 or zero_after_dot?(coef, exp)
 
     defp zero_after_dot?(coef, exp) when coef >= 10 and exp < 0,
       do: Kernel.rem(coef, 10) == 0 and zero_after_dot?(Kernel.div(coef, 10), exp + 1)

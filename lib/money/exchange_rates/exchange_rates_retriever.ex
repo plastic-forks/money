@@ -213,15 +213,15 @@ defmodule Money.ExchangeRates.Retriever do
   end
 
   defp process_response({:error, reason}, _url, _config) do
-    {:error, {Money.ExchangeRateError, "#{inspect reason}"}}
+    {:error, {Money.ExchangeRateError, "#{inspect(reason)}"}}
   end
 
   defp if_none_match_header(url) do
     case get_etag(url) do
       {etag, date} ->
         [
-          {'If-None-Match', etag},
-          {'If-Modified-Since', date}
+          {~c"If-None-Match", etag},
+          {~c"If-Modified-Since", date}
         ]
 
       _ ->
@@ -230,8 +230,8 @@ defmodule Money.ExchangeRates.Retriever do
   end
 
   defp cache_etag(headers, url) do
-    etag = :proplists.get_value('etag', headers)
-    date = :proplists.get_value('date', headers)
+    etag = :proplists.get_value(~c"etag", headers)
+    date = :proplists.get_value(~c"date", headers)
 
     if etag?(etag, date) do
       :ets.insert(@etag_cache, {url, {etag, date}})
@@ -480,5 +480,4 @@ defmodule Money.ExchangeRates.Retriever do
   defp exchange_rate_service_error do
     {Money.ExchangeRateError, "Exchange rate service does not appear to be running"}
   end
-
 end
